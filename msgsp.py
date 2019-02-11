@@ -21,6 +21,7 @@ class MSGsp:
 		print (self.SC)
 		print (self.L)
 		print (self.F1)
+		print (self.C[2])
 
 	def _sort(self):
 		self.M = OrderedDict(sorted(self.MS.items(),key=lambda t:t[1]))
@@ -30,10 +31,11 @@ class MSGsp:
 		lMIS = None
 		isMatched = False
 
-		self.SC = {item: sum([1 for sequence in self.S for itemset in sequence if item in itemset])/self.n for item in self.M}
+		self.SC = {item: sum([1 for sequence in self.S if sum(1 for itemset in sequence if item in itemset) > 0])/self.n for item in self.M}
 
 		for item, mis in self.M.items():
 			if (not isMatched) and item in self.SC and self.SC[item] >= mis:
+				isMatched = True
 				lMISItem,lMIS = item,mis
 				self.L.append(item)
 			elif isMatched and item in self.SC and self.SC[item] >= lMIS:
