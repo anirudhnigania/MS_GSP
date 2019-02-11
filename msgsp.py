@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from utils import ItemSet
 
 class MSGsp:
 	def __init__(self,S,MS,n,SDC):
@@ -11,17 +12,20 @@ class MSGsp:
 		self.SC = {}
 		self.F = OrderedDict()
 		self.C = OrderedDict()
-		self.F1 = []
-
 		self._sort()
 		self._initPass()
 		self._f1()
-		self._level2Candidategen()
-		print (self.M)
-		print (self.SC)
-		print (self.L)
-		print (self.F1)
-		print (self.C[2])
+
+		k = 2
+		while (True):
+			if k == 2:
+				self._level2Candidategen()
+			else:
+				break
+			k+=1
+
+		for item in self.C[2]:
+			print (item.itemset)
 
 	def _sort(self):
 		self.M = OrderedDict(sorted(self.MS.items(),key=lambda t:t[1]))
@@ -42,9 +46,11 @@ class MSGsp:
 				self.L.append(item)
 
 	def _f1(self):
+		F1 = []
 		for item in self.L:
 			if self.SC[item] >= self.MS[item]:
-				self.F1.append(item)
+				F1.append(item)
+		self.F[1] = F1
 
 	def _level2Candidategen(self):
 		C2 = []
@@ -52,11 +58,11 @@ class MSGsp:
 			if self.SC[l] >= self.MS[l]:
 				for h in self.L[idx+1:]:
 					if self.SC[h] >= self.MS[l] and abs(self.SC[h] - self.SC[l]) <= self.SDC:
-						C2.append([[l],[h]])
-						C2.append([[h],[l]])
+						C2.append(ItemSet([[l],[h]]))
+						C2.append(ItemSet([[h],[l]]))
 						if h > l:
-							C2.append([[l,h]])
+							C2.append(ItemSet([[l,h]]))
 						else:
-							C2.append([[h,l]])
+							C2.append(ItemSet([[h,l]]))
 		self.C[2] = C2
 					
