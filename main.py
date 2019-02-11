@@ -1,4 +1,4 @@
-from parser import Parser
+from gsp_Parser import Parser
 from msgsp import MSGsp
 
 parser = Parser("para1-1.txt","data-1.txt")
