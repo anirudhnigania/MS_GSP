@@ -1,4 +1,4 @@
-class ItemSet:
+class Sequence:
 	def __init__ (self,l):
-		self.itemset = l
+		self.sequence = l
 		self.sc = None

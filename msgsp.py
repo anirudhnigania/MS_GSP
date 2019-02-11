@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from utils import ItemSet
+from utils import Sequence
 
 class MSGsp:
 	def __init__(self,S,MS,n,SDC):
@@ -25,7 +25,7 @@ class MSGsp:
 			k+=1
 
 		for item in self.C[2]:
-			print (item.itemset)
+			print (item.sequence)
 
 	def _sort(self):
 		self.M = OrderedDict(sorted(self.MS.items(),key=lambda t:t[1]))
@@ -58,11 +58,11 @@ class MSGsp:
 			if self.SC[l] >= self.MS[l]:
 				for h in self.L[idx+1:]:
 					if self.SC[h] >= self.MS[l] and abs(self.SC[h] - self.SC[l]) <= self.SDC:
-						C2.append(ItemSet([[l],[h]]))
-						C2.append(ItemSet([[h],[l]]))
+						C2.append(Sequence([[l],[h]]))
+						C2.append(Sequence([[h],[l]]))
 						if h > l:
-							C2.append(ItemSet([[l,h]]))
+							C2.append(Sequence([[l,h]]))
 						else:
-							C2.append(ItemSet([[h,l]]))
+							C2.append(Sequence([[h,l]]))
 		self.C[2] = C2
 					
