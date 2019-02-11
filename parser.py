@@ -34,7 +34,6 @@ class Parser:
 		for line in lines:
 			sequence = [[int(a) for a in itemset[0:-1].split(',')] if "," in itemset else [int(itemset[0:-1])] 
 															for itemset in line.split('{') if len(itemset) > 0]
-			self.n+= len(sequence)
 			self.S.append(sequence)
-
+		self.n = len(self.S)
 		file.close()

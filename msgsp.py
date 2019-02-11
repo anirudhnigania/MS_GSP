@@ -17,7 +17,10 @@ class MSGsp:
 		self._initPass()
 		self._f1()
 		self._level2Candidategen()
-		
+		print (self.M)
+		print (self.SC)
+		print (self.L)
+		print (self.F1)
 
 	def _sort(self):
 		self.M = OrderedDict(sorted(self.MS.items(),key=lambda t:t[1]))
@@ -48,6 +51,10 @@ class MSGsp:
 				for h in self.L[idx+1:]:
 					if self.SC[h] >= self.MS[l] and abs(self.SC[h] - self.SC[l]) <= self.SDC:
 						C2.append([[l],[h]])
-						C2.append([l,h])
+						C2.append([[h],[l]])
+						if h > l:
+							C2.append([[l,h]])
+						else:
+							C2.append([[h,l]])
 		self.C[2] = C2
 					
