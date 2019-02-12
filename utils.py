@@ -1,4 +1,5 @@
 class Sequence:
-	def __init__ (self,l):
+	def __init__ (self,l,minMISItem):
 		self.sequence = l
-		self.sc = None
+		self.count = 0
+		self.minMISItem = minMISItem
