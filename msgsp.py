@@ -23,20 +23,22 @@ class MSGsp:
 		while (True):
 			if k == 2:
 				self._level2CandidateGenSPM()
-			elif k == 3:
-				self._MSCandidateGenSPM(k)
 			else:
-				break
+				self._MSCandidateGenSPM(k)
+
 			for s in self.S:
 				for c in self.C[k]:
 					if self._contains(c.sequence,s):
 						c.count += 1
 			self._frequentSequence(k)
+			if len(self.F[k]) == 0:
+				break;
 			k+=1
 
 		#print (self.C.items())
-		for item in self.C[3]:
-		 	print ("{} --- {}".format(item.sequence,item.count))
+		for k,fk in self.F.items():
+			for item in fk:
+		 		print ("{} --- {}".format(item.sequence,item.count))
 
 	def _sort(self):
 		self.M = OrderedDict(sorted(self.MS.items(),key=lambda t:t[1]))
@@ -97,9 +99,8 @@ class MSGsp:
 					if self._lowestMIS(s2.sequence,False,k):
 						self._ForwardCandidateGenSPM(s1,s2,False,k)
 					else:
-						idd = 2
 						self._candidateGenSPM(s1,s2,k)
-		#self._prune(k)
+		self._prune(k)
 
 	def _lowestMIS(self,s,isFirst,k):
 		x = 0 if isFirst else -1
@@ -284,6 +285,21 @@ class MSGsp:
 				if c not in F:
 					F[c] = c;
 		self.F[k] = F
+
+	def _prune(self,k):
+		for idx, c in enumerate(self.C[k]):
+			if not self._allFrequentk_1(c,k):
+				del self.C[k][idx]
+				self.di.remove(c)
+	
+	def _allFrequentk_1(self,c,k):
+		for i, itemset in enumerate(c.sequence):
+			for j, item in enumerate(itemset):
+				cc = copy.deepcopy(c.sequence)
+				del cc[i][j]
+				if Sequence(cc,0) not in self.F[k-1]:
+					return False
+		return True
 
 
 
