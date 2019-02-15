@@ -39,7 +39,7 @@ class MSGsp:
 			print ("\n")
 			print ("______________LEVEL {}______________ : {}".format(k,len(fk)))
 			for item in fk:
-		 		print ("{}__________{}".format(item.sequence,item.count))
+		 		print ("{} ==== {}".format(item.sequence,item.count))
 
 	def _sort(self):
 		print ("Sort")
@@ -90,7 +90,6 @@ class MSGsp:
 							C2.append(Sequence([[h,l]],cMinMISItem))
 		self.C[2] = C2
 	
-
 	def _MSCandidateGenSPM(self,k):
 		print ("MS Candidate Generation for : {}".format(k))
 		F = self.F[k-1]
@@ -98,20 +97,14 @@ class MSGsp:
 		for s1 in F:
 			if self._lowestMIS(s1.sequence,True,k):
 				for s2 in F:
-					#print ("{} ==== {}".format(s1.sequence,s2.sequence))
 					self._ForwardCandidateGenSPM(s1,s2,True,k)
 			else:
 				for s2 in F:
-					if self._lowestMIS(s2.sequence,False,k):
+					if self._lowestMIS(s2.sequence,False,k):	
 						self._ForwardCandidateGenSPM(s1,s2,False,k)
 					else:
 						self._candidateGenSPM(s1,s2,k)
-		#for c in self.C[k]:
-		#	print (c.sequence)
 		self._prune(k)
-		#print ("After Pruning !!!!!!!!!!!")
-		#for c in self.C[k]:
-		#	print (c.sequence)
 
 	def _ForwardCandidateGenSPM(self,seq1,seq2,isFirst,k):
 		s1 = seq1.sequence if isFirst else [list(reversed(itemset)) for itemset in list(reversed(seq2.sequence))]
@@ -130,6 +123,7 @@ class MSGsp:
 			return
 
 		if self._sameSequence(_s1,_s2):
+			
 			minMISItem = seq1.minMISItem if self.MS[lItemS2] >= self.MS[seq1.minMISItem] else lItemS2
 			cs1 = copy.deepcopy(s1)
 			if separate:
@@ -198,10 +192,10 @@ class MSGsp:
 		return sItemS1
 
 	def _sameLengthSizeSequence(self,s,typ):
-		items = set()
+		items = list()
 		for itemset in s:
 			for item in itemset:
-				items.add(item)
+				items.append(item)
 
 		if (typ == 1):
 			if len(items) == len(s):
@@ -219,13 +213,12 @@ class MSGsp:
 			else:
 				return False
 
-
 	def _candidateGenSPM(self,seq1,seq2,k):
 		s1, s2 = seq1.sequence, seq2.sequence
 		_s1, _s2 = copy.deepcopy(s1), copy.deepcopy(s2)
 		item = _s2[-1][-1]
 		fItemS1 = _s1[0][0]
-		if abs(self.MS[item] - self.MS[fItemS1]) > self.SDC:
+		if abs(self.SC[item] - self.SC[fItemS1]) > self.SDC:
 			return;
 
 		separate = True if len(_s2[-1]) == 1 else False
@@ -281,14 +274,11 @@ class MSGsp:
 		sLen = len(s)
 		sPrvIdx = -1
 		for cIdx, cItem in enumerate(c):
-			if cItem in s and s.index(cItem) >= sPrvIdx:
-				sPrvIdx = s.index(cItem)
-			else:
+			if cItem not in s:
 				return False
 		return True
 
 	def _frequentSequence(self,k):
-		print ("Frequent Sequence : {}".format(k))
 		F = {}
 		for c in self.C[k]:
 			if c.count/self.n >= self.MS[c.minMISItem]:
@@ -299,27 +289,22 @@ class MSGsp:
 	def _prune(self,k):
 		toRemove = []
 		for idx, c in enumerate(self.C[k]):
-			#print ("Pruning {}".format(c.sequence))
 			if not self._allFrequentk_1(c,k):
-				#print ("Remove")
 				toRemove.append(c)
 				self.di.remove(c)
 		for c in toRemove:
 		 	self.C[k].remove(c)
 	
 	def _allFrequentk_1(self,c,k):
-		#print (c.minMISItem, c.minMISItemCount)
 		for i, itemset in enumerate(c.sequence):
 			for j, item in enumerate(itemset):
 				if item == c.minMISItem and c.minMISItemCount == 1:
-					#print ("What the hell")
 					continue
 				cc = copy.deepcopy(c.sequence)
 				del cc[i][j]
 				if len(cc[i]) == 0:
 					del cc[i]
 				if Sequence(cc,0) not in self.F[k-1]:
-					#print (cc)
 					return False
 		return True
 
