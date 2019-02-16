@@ -42,7 +42,6 @@ class MSGsp:
 			print ("Number of Length {} Frequency Sequences: {}".format(k,len(fk)))
 			for item in fk:
 		 		# print ("{} ==== {}".format(item.sequence,item.count))
-				# print('<{' + '}{'.join(', '.join(map(str,sl)) for sl in item.sequence) + '}>')
 				print(item.getPrintableString())
 
 	def _sort(self):
@@ -51,12 +50,12 @@ class MSGsp:
 
 	def _initPass(self):
 		print ("Init Pass")
-		lMISItem = None
-		lMIS = None
+		lMISItem  = None	#? unused
+		lMIS      = None
 		isMatched = False
 
 		self.SC = {item: sum([1 for sequence in self.S if sum(1 for itemset in sequence if item in itemset) > 0])/self.n for item in self.M}
-		self.Count = {item: sum([1 for sequence in self.S if sum(1 for itemset in sequence if item in itemset) > 0]) for item in self.M}
+		self.Count = {item: sum([1 for sequence in self.S if sum(1 for itemset in sequence if item in itemset) > 0]) for item in self.M}   #? why count twice
 
 		for item, mis in self.M.items():
 			if (not isMatched) and item in self.SC and self.SC[item] >= mis:
@@ -156,7 +155,7 @@ class MSGsp:
 		itemMIS  = self.MS[item]
 		sequence = enumerate(s) if isFirst else enumerate(reversed(s))
 		for idx, iset in sequence:
-			sIdx = 1 if idx == 0 else 0
+			sIdx    = 1 if idx == 0 else 0
 			itemset = iset if isFirst else list(reversed(iset))
 			for item in itemset[sIdx:]:
 				if self.MS[item] <= itemMIS:
@@ -259,7 +258,7 @@ class MSGsp:
 		
 
 	def _contains(self,c,s):
-		sIdx = 0
+		sIdx  = 0
 		sSize = len(s) # [[10][10,40][30,60][90]]
 		cSize = len(c) # [[20][30]]
 		if cSize > sSize:
@@ -275,8 +274,8 @@ class MSGsp:
 		return True
 
 	def _subSequence(self,c,s):
-		sLen = len(s)
-		sPrvIdx = -1
+		sLen    = len(s)	#? unused
+		sPrvIdx = -1		#? unused
 		for cIdx, cItem in enumerate(c):
 			if cItem not in s:
 				return False
