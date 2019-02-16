@@ -4,17 +4,17 @@ import copy
 
 class MSGsp:
 	def __init__(self,S,MS,n,SDC):
-		self.S = S    		# Data Sequences
-		self.MS = MS
-		self.n = n
-		self.SDC = SDC
-		self.M = None
-		self.L = []
-		self.SC = {}
+		self.S     = S    							# Data Sequences
+		self.MS    = MS								#
+		self.n     = n
+		self.SDC   = SDC
+		self.M     = None
+		self.L     = []
+		self.SC    = {}
 		self.Count = {}
-		self.F = OrderedDict()
-		self.C = OrderedDict()
-		self.di = set()
+		self.F     = OrderedDict()
+		self.C     = OrderedDict()
+		self.di    = set()
 		self._sort()
 		self._initPass()
 		self._f1()
@@ -111,13 +111,13 @@ class MSGsp:
 		s2 = seq2.sequence if isFirst else [list(reversed(itemset)) for itemset in list(reversed(seq1.sequence))]
 		nseq1, nseq2 = None, None
 		_s1, _s2 = copy.deepcopy(s1), copy.deepcopy(s2)
-		fItemS1 = _s1[0][0]
-		lItemS1 = _s1[-1][-1]
-		lItemS2 = _s2[-1][-1]
+		fItemS1  = _s1[0][0]
+		lItemS1  = _s1[-1][-1]
+		lItemS2  = _s2[-1][-1]
 		separate = True if len(_s2[-1]) == 1 else False
-		sItemS1 = self._deleteItemFromSequence(_s1,_s2)
+		sItemS1  = self._deleteItemFromSequence(_s1,_s2)
 		if abs(self.SC[lItemS2] - self.SC[sItemS1]) > self.SDC:
-			return;
+			return
 		
 		if self.MS[lItemS2] <= self.MS[fItemS1]:	# Condition 2
 			return
@@ -147,9 +147,9 @@ class MSGsp:
 				self.C[k].append(nseq2)
 
 	def _lowestMIS(self,s,isFirst,k):
-		x = 0 if isFirst else -1
-		item = s[x][x]
-		itemMIS = self.MS[item]
+		x        = 0 if isFirst else -1
+		item     = s[x][x]
+		itemMIS  = self.MS[item]
 		sequence = enumerate(s) if isFirst else enumerate(reversed(s))
 		for idx, iset in sequence:
 			sIdx = 1 if idx == 0 else 0
@@ -214,12 +214,12 @@ class MSGsp:
 				return False
 
 	def _candidateGenSPM(self,seq1,seq2,k):
-		s1, s2 = seq1.sequence, seq2.sequence
+		s1, s2   = seq1.sequence, seq2.sequence
 		_s1, _s2 = copy.deepcopy(s1), copy.deepcopy(s2)
-		item = _s2[-1][-1]
-		fItemS1 = _s1[0][0]
+		item     = _s2[-1][-1]
+		fItemS1  = _s1[0][0]
 		if abs(self.SC[item] - self.SC[fItemS1]) > self.SDC:
-			return;
+			return
 
 		separate = True if len(_s2[-1]) == 1 else False
 		del _s1[0][0]
@@ -283,7 +283,7 @@ class MSGsp:
 		for c in self.C[k]:
 			if c.count/self.n >= self.MS[c.minMISItem]:
 				if c not in F:
-					F[c] = c;
+					F[c] = c
 		self.F[k] = F
 
 	def _prune(self,k):
@@ -307,14 +307,4 @@ class MSGsp:
 				if Sequence(cc,0) not in self.F[k-1]:
 					return False
 		return True
-
-
-
-			
-
-
-
-
-
-
-
+		
