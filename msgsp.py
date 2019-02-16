@@ -5,20 +5,22 @@ import copy
 class MSGsp:
 	def __init__(self,S,MS,n,SDC):
 		self.S     = S    							# Data Sequences
-		self.MS    = MS								#
-		self.n     = n
-		self.SDC   = SDC
-		self.M     = None
-		self.L     = []
-		self.SC    = {}
+		self.MS    = MS								# Minimum Suupport of items
+		self.n     = n								# Total number of unique items
+		self.SDC   = SDC							# User defined Support Difference Constraint
+		self.M     = None							# Items sorted according to Min. Item Support stored in MS
+		self.L     = []								# seeds set for generating the set of candidate sequences of length 2
+		self.SC    = {}								# Actual support count of items from given data
 		self.Count = {}
-		self.F     = OrderedDict()
-		self.C     = OrderedDict()
+		self.F     = OrderedDict()					# Frequent k-Sequences
+		self.C     = OrderedDict()					# Candidate k-Sequences
 		self.di    = set()
+		k          = 2								
 		self._sort()
 		self._initPass()
 		self._f1()
-		k = 2
+		
+
 		while (True):
 			print ("Generating {} - Sequence".format(k))
 			if k == 2:
@@ -32,14 +34,15 @@ class MSGsp:
 						c.count += 1
 			self._frequentSequence(k)
 			if len(self.F[k]) == 0:
-				break;
+				break
 			k+=1
 
 		for k,fk in self.F.items():
 			print ("\n")
-			print ("______________LEVEL {}______________ : {}".format(k,len(fk)))
+			print ("Number of Length {} Frequency Sequences: {}".format(k,len(fk)))
 			for item in fk:
-		 		print ("{} ==== {}".format(item.sequence,item.count))
+		 		# print ("{} ==== {}".format(item.sequence,item.count))
+				print('<{' + '}{'.join(', '.join(map(str,sl)) for sl in item.sequence) + '}>')
 
 	def _sort(self):
 		print ("Sort")
@@ -114,7 +117,7 @@ class MSGsp:
 		fItemS1  = _s1[0][0]
 		lItemS1  = _s1[-1][-1]
 		lItemS2  = _s2[-1][-1]
-		separate = True if len(_s2[-1]) == 1 else False
+		separate = True if len(_s2[-1]) == 1 else False							# indicated whether last (or first) item in s2 (or s1) is a separate 1-itemset
 		sItemS1  = self._deleteItemFromSequence(_s1,_s2)
 		if abs(self.SC[lItemS2] - self.SC[sItemS1]) > self.SDC:
 			return
@@ -307,4 +310,3 @@ class MSGsp:
 				if Sequence(cc,0) not in self.F[k-1]:
 					return False
 		return True
-		

@@ -18,3 +18,6 @@ class Sequence:
 
 	def __hash__(self):
 		return self.uid
+
+	# def getPrintableString(self):
+	# 	return '<{' + '}{'.join(', '.join(map(str,sl)) for sl in self.sequence) + '}>'
