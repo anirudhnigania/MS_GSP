@@ -42,7 +42,8 @@ class MSGsp:
 			print ("Number of Length {} Frequency Sequences: {}".format(k,len(fk)))
 			for item in fk:
 		 		# print ("{} ==== {}".format(item.sequence,item.count))
-				print('<{' + '}{'.join(', '.join(map(str,sl)) for sl in item.sequence) + '}>')
+				# print('<{' + '}{'.join(', '.join(map(str,sl)) for sl in item.sequence) + '}>')
+				print(item.getPrintableString())
 
 	def _sort(self):
 		print ("Sort")
