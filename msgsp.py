@@ -122,7 +122,7 @@ class MSGsp:
 		if abs(self.SC[lItemS2] - self.SC[sItemS1]) > self.SDC:
 			return
 		
-		if self.MS[lItemS2] <= self.MS[fItemS1]:	# Condition 2
+		if self.MS[lItemS2] < self.MS[fItemS1]:	# Condition 2
 			return
 
 		if self._sameSequence(_s1,_s2):
