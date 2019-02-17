@@ -14,15 +14,15 @@ class MSGsp:
 		self.Count = {}
 		self.F     = OrderedDict()					# Frequent k-Sequences
 		self.C     = OrderedDict()					# Candidate k-Sequences
-		self.di    = set()
-		self.filename = "results.txt"
-		
-		self._msgsp()
-		self._outputResult()
+		self.di    = {}							# Dictionary for candidate sequence duplicate check
+		self.filename = "results.txt"				# Output File
+
+		self._msgsp()								# Calls the MS-GSP algorithm
+		self._outputResult()						# Writes data to output file
 
 	def _msgsp(self):
-		k = 2								
-		self._sort()
+		k = 2										# K initialized to 2-length sequence	
+		self._sort()								
 		self._initPass()
 		self._f1()
 	
@@ -37,6 +37,12 @@ class MSGsp:
 				for c in self.C[k]:
 					if c.contained(s):
 						c.count += 1
+					cc = copy.deepcopy(c)
+					cc.removeElement(cc.minMISItem)
+					if cc.contained(s):
+						if cc in self.di:
+							self.di[cc].count += 1
+
 			self._frequentSequence(k)
 			if len(self.F[k]) == 0:
 				break
@@ -140,11 +146,11 @@ class MSGsp:
 				nseq1 = self._newSequence(k,cs1,minMISItem,isFirst)
 		if nseq1:
 			if nseq1 not in self.di:
-				self.di.add(nseq1)
+				self.di[nseq1] = nseq1
 				self.C[k].append(nseq1)
 		if nseq2:
 			if nseq2 not in self.di:
-				self.di.add(nseq2)
+				self.di[nseq2] = nseq2
 				self.C[k].append(nseq2)
 
 	def _lowestMIS(self,s,isFirst,k):
@@ -189,7 +195,7 @@ class MSGsp:
 			minMISItem = seq1.minMISItem if self.MS[item] >= self.MS[seq1.minMISItem] else item 
 			nseq1 = Sequence(cs1,minMISItem)
 			if nseq1 not in self.di:
-				self.di.add(nseq1)
+				self.di[nseq1] = nseq1
 				self.C[k].append(nseq1)
 
 	def _frequentSequence(self,k):
@@ -205,7 +211,7 @@ class MSGsp:
 		for idx, c in enumerate(self.C[k]):
 			if not self._allFrequentk_1(c,k):
 				toRemove.append(c)
-				self.di.remove(c)
+				del self.di[c]
 		for c in toRemove:
 		 	self.C[k].remove(c)
 	
