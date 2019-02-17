@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from utils import Sequence
+from utils import Sequence, sameSequence, deleteItemFromSequence, sameLengthSizeSequence, reversedSequence
 import copy
 
 class MSGsp:
@@ -15,12 +15,17 @@ class MSGsp:
 		self.F     = OrderedDict()					# Frequent k-Sequences
 		self.C     = OrderedDict()					# Candidate k-Sequences
 		self.di    = set()
-		k          = 2								
+		self.filename = "results.txt"
+		
+		self._msgsp()
+		self._outputResult()
+
+	def _msgsp(self):
+		k = 2								
 		self._sort()
 		self._initPass()
 		self._f1()
-		
-
+	
 		while (True):
 			print ("Generating {} - Sequence".format(k))
 			if k == 2:
@@ -30,19 +35,12 @@ class MSGsp:
 
 			for s in self.S:
 				for c in self.C[k]:
-					if self._contains(c.sequence,s):
+					if c.contained(s):
 						c.count += 1
 			self._frequentSequence(k)
 			if len(self.F[k]) == 0:
 				break
 			k+=1
-
-		for k,fk in self.F.items():
-			print ("\n")
-			print ("Number of Length {} Frequency Sequences: {}".format(k,len(fk)))
-			for item in fk:
-		 		# print ("{} ==== {}".format(item.sequence,item.count))
-				print(item.getPrintableString())
 
 	def _sort(self):
 		print ("Sort")
@@ -118,25 +116,25 @@ class MSGsp:
 		lItemS1  = _s1[-1][-1]
 		lItemS2  = _s2[-1][-1]
 		separate = True if len(_s2[-1]) == 1 else False							# indicated whether last (or first) item in s2 (or s1) is a separate 1-itemset
-		sItemS1  = self._deleteItemFromSequence(_s1,_s2)
+		sItemS1  = deleteItemFromSequence(_s1,_s2)
 		if abs(self.SC[lItemS2] - self.SC[sItemS1]) > self.SDC:
 			return
 		
 		if self.MS[lItemS2] < self.MS[fItemS1]:	# Condition 2
 			return
 
-		if self._sameSequence(_s1,_s2):
+		if sameSequence(_s1,_s2):
 			
 			minMISItem = seq1.minMISItem if self.MS[lItemS2] >= self.MS[seq1.minMISItem] else lItemS2
 			cs1 = copy.deepcopy(s1)
 			if separate:
 				cs1.append([lItemS2])
 				nseq1 = self._newSequence(k,cs1,minMISItem,isFirst)
-				if (((lItemS2 > lItemS1) and isFirst) or ((lItemS2 < lItemS1) and not isFirst)) and self._sameLengthSizeSequence(s1,1):
+				if (((lItemS2 > lItemS1) and isFirst) or ((lItemS2 < lItemS1) and not isFirst)) and sameLengthSizeSequence(s1,1):
 					cs2 = copy.deepcopy(s1)
 					cs2[-1].append(lItemS2)
 					nseq2 = self._newSequence(k,cs2,minMISItem,isFirst)
-			elif ((((lItemS2 > lItemS1) and isFirst) or ((lItemS2 < lItemS1) and not isFirst)) and self._sameLengthSizeSequence(s1,2)) or self._sameLengthSizeSequence(s1,3):
+			elif ((((lItemS2 > lItemS1) and isFirst) or ((lItemS2 < lItemS1) and not isFirst)) and sameLengthSizeSequence(s1,2)) or sameLengthSizeSequence(s1,3):
 				cs1 = copy.deepcopy(s1)
 				cs1[-1].append(lItemS2)
 				nseq1 = self._newSequence(k,cs1,minMISItem,isFirst)
@@ -163,58 +161,8 @@ class MSGsp:
 		return True
 
 	def _newSequence(self,k,s,minMISItem,isFirst):
-		sequence = Sequence(s,minMISItem) if isFirst else Sequence(self._reversedSequence(s),minMISItem)
+		sequence = Sequence(s,minMISItem) if isFirst else Sequence(reversedSequence(s),minMISItem)
 		return sequence
-
-	def _reversedSequence(self,s):
-		return [list(reversed(itemset)) for itemset in list(reversed(s))]
-
-	def _deleteItemFromSequence(self,_s1,_s2):
-		sItemS1 = None
-
-		del _s2[-1][-1]
-		if len(_s2[-1]) == 0:
-			del _s2[-1]
-
-		if len(_s1) == 1:
-			sItemS1 = _s1[0][1]
-			del _s1[0][1]
-			if len(_s1[0]) == 0:
-				del _s1[0]
-		else:
-			if len(_s1[0]) > 1:
-				sItemS1 = _s1[0][1]
-				del _s1[0][1]
-				if len(_s1[0]) == 0:
-					del _s1[0]
-			else:
-				sItemS1 = _s1[1][0]
-				del _s1[1][0]
-				if len(_s1[1]) == 0:
-					del _s1[1]
-		return sItemS1
-
-	def _sameLengthSizeSequence(self,s,typ):
-		items = list()
-		for itemset in s:
-			for item in itemset:
-				items.append(item)
-
-		if (typ == 1):
-			if len(items) == len(s):
-				return True
-			else:
-				return False
-		elif (typ == 2):
-			if len(items) == 2 and len(s) == 1:
-				return True
-			else:
-				return False
-		elif typ == 3:
-			if len(items) > 2:
-				return True
-			else:
-				return False
 
 	def _candidateGenSPM(self,seq1,seq2,k):
 		s1, s2   = seq1.sequence, seq2.sequence
@@ -232,7 +180,7 @@ class MSGsp:
 		if len(_s2[-1]) == 0:
 			del _s2[-1]
 
-		if self._sameSequence(_s1,_s2):
+		if sameSequence(_s1,_s2):
 			cs1 = copy.deepcopy(s1)
 			if separate:
 				cs1.append([item])
@@ -243,43 +191,6 @@ class MSGsp:
 			if nseq1 not in self.di:
 				self.di.add(nseq1)
 				self.C[k].append(nseq1)
-
-	def _sameSequence(self,s1,s2):
-		if len(s1) != len (s2):
-			return False
-		for i in range(len(s1)):
-			if len(s1[i]) != len(s2[i]):
-				return False
-			else:
-				for j in range(len(s1[i])):
-					if s1[i][j] != s2[i][j]:
-						return False
-		return True
-		
-
-	def _contains(self,c,s):
-		sIdx  = 0
-		sSize = len(s) # [[10][10,40][30,60][90]]
-		cSize = len(c) # [[20][30]]
-		if cSize > sSize:
-			return False
-
-		for cIdx, cItemSet in enumerate(c):
-			cRemSize = cSize - cIdx
-			while sIdx < sSize and not self._subSequence(cItemSet,s[sIdx]):
-				sIdx += 1
-				if (sSize - sIdx) < cRemSize:
-					return False
-			sIdx += 1
-		return True
-
-	def _subSequence(self,c,s):
-		sLen    = len(s)	#? unused
-		sPrvIdx = -1		#? unused
-		for cIdx, cItem in enumerate(c):
-			if cItem not in s:
-				return False
-		return True
 
 	def _frequentSequence(self,k):
 		F = {}
@@ -310,3 +221,11 @@ class MSGsp:
 				if Sequence(cc,0) not in self.F[k-1]:
 					return False
 		return True
+
+	def _outputResult(self):
+		fp = open(self.filename,"w")
+		for k,fk in self.F.items():
+			if (len(fk)>0):
+				fp.write("\nNumber of Length {} Frequency Sequences: {}\n".format(k,len(fk)))
+				for item in fk:
+					fp.write('{} Count: {}\n'.format(item.string(),item.count))
